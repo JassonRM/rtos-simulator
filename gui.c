@@ -37,6 +37,7 @@ void run(int map[MAP_X][MAP_Y]) {
     al_register_event_source(event_queue, al_get_timer_event_source(timer));
 
     block = al_load_bitmap("assets/block.png");
+    martian = al_load_bitmap("assets/martian_blue.png");
 
     int cell_size = 100;
     int offset_x = 200;
@@ -59,9 +60,17 @@ void run(int map[MAP_X][MAP_Y]) {
         }
         for (int i = 0; i < MAP_X; i++) {
             for (int j = 0; j < MAP_Y; j++) {
-                if (map[j][i] == 1) {
-                    al_draw_scaled_bitmap(block, 0, 0, 48, 48, cell_size * i + offset_x, cell_size * j, cell_size,
-                                          cell_size, NULL);
+                switch (map[j][i]) {
+                    case 1:
+                        al_draw_scaled_bitmap(block, 0, 0, 48, 48, cell_size * i + offset_x, cell_size * j, cell_size,
+                                              cell_size, NULL);
+                        break;
+                    case 2:
+                        al_draw_scaled_bitmap(martian, 0, 0, 213, 428, cell_size * i + offset_x, cell_size * j, cell_size,
+                                              cell_size, NULL);
+                        break;
+                    default:
+                        continue;
                 }
             }
         }
