@@ -1,18 +1,17 @@
 CC=gcc
 CFLAGS=
-ALLEGRO = `pkg-config --cflags --libs allegro-5`
-DEPS =
+LIBS = `pkg-config --cflags --libs allegro-5 allegro_image-5`
+DEPS = %.h
+TARGET = rtos-simulator
+OBJFILES = main.o gui.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-all: application
+all: $(TARGET)
 
-application: main.o
-	$(CC) main.o $(ALLEGRO) -o rtos-simulator
-
-main.o: main.c
-	$(CC) -c $(CFLAGS) main.c -o main.o
+$(TARGET): $(OBJFILES)
+	$(CC) $(CFLAGS) $(OBJFILES) -o $(TARGET) $(LIBS)
 
 clean:
-	rm *o rtos-simulator
+	rm -f $(OBJFILES) $(TARGET) *~
