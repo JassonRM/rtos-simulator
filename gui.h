@@ -8,15 +8,15 @@
 #include "allegro5/allegro5.h"
 #include "allegro5/allegro_image.h"
 
-#define WIDTH 800
-#define HEIGHT 800
-#define MAP_X 4
-#define MAP_Y 4
+#define WIDTH 1200
+#define HEIGHT 1000
+#define MAP_X 10
+#define MAP_Y 10
 
 #endif //RTOS_SIMULATOR_GUI_H
 
 void init_app();
 
-void run();
+void run(int map[MAP_X][MAP_Y]);
 
 void destroy();
