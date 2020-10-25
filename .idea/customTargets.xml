@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CLionExternalBuildManager">
+    <target id="3af23afd-c305-4066-bc94-a1bbc6aad33f" name="rtos-simulator" defaultType="MAKE">
+      <configuration id="a785046e-e04c-41f2-ab95-427cc5ced2de" name="rtos-simulator">
+        <build type="MAKE">
+          <make targetName="all" />
+        </build>
+        <clean type="MAKE">
+          <make targetName="clean" />
+        </clean>
+      </configuration>
+    </target>
+  </component>
+</project>
