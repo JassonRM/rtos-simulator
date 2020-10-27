@@ -11,6 +11,8 @@ typedef struct alien {
     int period;
     int exec_time;
     int rem_time;
+    int x;
+    int y;
 } alien_t;
 
 void init_alien(alien_t **alien, int id, int offset, int period, int exec_time);
