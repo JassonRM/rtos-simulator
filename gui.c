@@ -21,7 +21,7 @@ void init_app() {
     srand(time(NULL));
 }
 
-void run(int map[MAP_X][MAP_Y]) {
+void run(int map[MAP_Y][MAP_X]) {
     ALLEGRO_DISPLAY *display = al_create_display(WIDTH, HEIGHT);
     char *window_title = "RTOS Simulator";
     al_set_window_title(display, window_title);
@@ -77,16 +77,12 @@ void run(int map[MAP_X][MAP_Y]) {
     destroy();
 }
 
-void move(alien_t *alien, int map[MAP_X][MAP_Y]) {
+void move(alien_t *alien, int map[MAP_Y][MAP_X]) {
+    int direction = alien->direction;
     bool done = false;
-    int direction;
-
-    printf("Current: %d", map[alien->x][alien->y]);
-
     while (!done) {
-        direction = rand() % 4;
         switch (direction) {
-            case 0:
+            case 0: // Left
                 if (alien->x > 0 && map[alien->x - 1][alien->y] == 0) {
                     map[alien->x][alien->y] = 0;
                     alien->x -= 1;
@@ -94,7 +90,7 @@ void move(alien_t *alien, int map[MAP_X][MAP_Y]) {
                     done = true;
                 }
                 break;
-            case 1:
+            case 1: // Right
                 if (alien->x < MAP_X - 1 && map[alien->x + 1][alien->y] == 0) {
                     map[alien->x][alien->y] = 0;
                     alien->x += 1;
@@ -102,7 +98,7 @@ void move(alien_t *alien, int map[MAP_X][MAP_Y]) {
                     done = true;
                 }
                 break;
-            case 2:
+            case 2: // Up
                 if (alien->y > 0 && map[alien->x][alien->y - 1] == 0) {
                     map[alien->x][alien->y] = 0;
                     alien->y -= 1;
@@ -110,7 +106,7 @@ void move(alien_t *alien, int map[MAP_X][MAP_Y]) {
                     done = true;
                 }
                 break;
-            case 3:
+            case 3: // Down
                 if (alien->y < MAP_Y - 1 && map[alien->x][alien->y + 1] == 0) {
                     map[alien->x][alien->y] = 0;
                     alien->y += 1;
@@ -121,6 +117,7 @@ void move(alien_t *alien, int map[MAP_X][MAP_Y]) {
             default:
                 break;
         }
+        direction = rand() % 4;
     }
 };
 

@@ -16,5 +16,6 @@ void init_alien(alien_t **alien, int id, int offset, int period, int exec_time) 
     (*alien)->rem_time = exec_time;
     (*alien)->x = 1;
     (*alien)->y = 0;
+    (*alien)->direction = 1;
     return;
 }

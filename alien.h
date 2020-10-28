@@ -13,6 +13,7 @@ typedef struct alien {
     int rem_time;
     int x;
     int y;
+    int direction;
 } alien_t;
 
 void init_alien(alien_t **alien, int id, int offset, int period, int exec_time);
