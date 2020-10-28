@@ -4,8 +4,9 @@
 
 #include "alien.h"
 #include <stdlib.h>
+#include <stdio.h>
 
-void init_alien(alien_t **alien, int id, int offset, int period, int exec_time) {
+void init_alien(alien_t **alien, int id, int offset, int period, int exec_time, int* max_energy) {
     alien_t *new = (alien_t *) malloc(sizeof(alien_t));
     *alien = new;
     (*alien)->id = id;
@@ -19,5 +20,8 @@ void init_alien(alien_t **alien, int id, int offset, int period, int exec_time) 
     (*alien)->r = rand();
     (*alien)->g = rand();
     (*alien)->b = rand();
+    if(exec_time > *max_energy){
+        *max_energy = exec_time;
+    }
     return;
 }

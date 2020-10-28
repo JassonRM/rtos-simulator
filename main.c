@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include "scheduler.h"
 
+int MAX_ENERGY;
 int map[MAP_Y][MAP_X] = {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
                          {1,  0,  -1, 0,  0,  0,  -1, 0,  0,  0,  0,  -1, 0,  0,  -1},
                          {-1, 0,  -1, -1, 0,  -1, 0,  0,  -1, -1, -1, -1, 0,  -1, -1},
@@ -14,7 +15,7 @@ int map[MAP_Y][MAP_X] = {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
                          {-1, 0,  0,  -1, 0,  -1, -1, -1, -1, -1, 0,  -1, 0,  0,  -1},
                          {-1, 0,  -1, 0,  0,  -1, 0,  0,  0,  0,  0,  -1, -1, 0,  -1},
                          {-1, 0,  0,  -1, -1, -1, 0,  -1, -1, -1, 0,  0,  0,  0,  -1},
-                         {-1, -1, -1, 0,  0,  0,  0,  -1, 3,  0,  0,  -1, -1, -1, -1},
+                         {-1, -1, -1, 0,  0,  0,  0,  -1, 0,  0,  0,  -1, -1, -1, -1},
                          {-1, 0,  0,  -1, -1, 0,  -1, -1, -1, -1, -1, 0,  0,  0,  0},
                          {-1, -1, 0,  0,  0,  0,  -1, 0,  0,  0,  0,  0,  -1, 0,  -1},
                          {-1, 0,  0,  -1, -1, 0,  0,  0,  -1, -1, -1, -1, 0,  0,  -1},
@@ -33,13 +34,13 @@ int main(int argc, char **argv) {
     list_t *list;
     new_list(&list);
     alien_t *alien;
-    init_alien(&alien, 1, 1, 4, 1);
+    init_alien(&alien, 1, 1, 4, 1, &MAX_ENERGY);
     append(list, alien);
-    init_alien(&alien, 2, 0, 5, 2);
+    init_alien(&alien, 2, 0, 5, 2, &MAX_ENERGY);
     append(list, alien);
 
     pthread_t logic_thread;
-    pthread_create(&logic_thread, NULL, update, alien);
+    //pthread_create(&logic_thread, NULL, update, alien);
 
     list_t *report;
     new_list(&report);
@@ -49,7 +50,7 @@ int main(int argc, char **argv) {
         append(report, temp);
     }
 
-    run(map, list);
+    run(map, list, &MAX_ENERGY);
     report_run(2, list, report, 0);
     return 0;
 }

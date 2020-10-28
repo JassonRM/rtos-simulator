@@ -17,6 +17,6 @@ typedef struct alien {
     int r, g, b;
 } alien_t;
 
-void init_alien(alien_t **alien, int id, int offset, int period, int exec_time);
+void init_alien(alien_t **alien, int id, int offset, int period, int exec_time, int* max_energy);
 
 #endif //RTOS_SIMULATOR_ALIEN_H

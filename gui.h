@@ -28,7 +28,7 @@
 
 void init_app();
 
-void run(int map[MAP_X][MAP_Y], list_t*);
+void run(int map[MAP_X][MAP_Y], list_t*, int* max_energy);
 
 void move(alien_t*, int[MAP_X][MAP_Y]);
 
