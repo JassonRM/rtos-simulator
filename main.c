@@ -34,13 +34,14 @@ int main(int argc, char** argv) {
     new_list(&list);
     alien_t *alien;
     init_alien(&alien, 1, 1, 4, 1);
-    init_list(list, alien);
-
+    append(list, alien);
+//    init_alien(&alien, 2, 1, 4, 1);
+//    append(list, alien);
 
     pthread_t logic_thread;
     pthread_create(&logic_thread, NULL, update, alien);
 
-    run(map);
+    run(map, list);
     report_run(4);
     return 0;
 }

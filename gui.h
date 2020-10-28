@@ -8,8 +8,9 @@
 #include "allegro5/allegro5.h"
 #include "allegro5/allegro_image.h"
 #include "alien.h"
+#include "miscellaneous.h"
 
-#define WIDTH 1700
+#define WIDTH 1800
 #define HEIGHT 1500
 #define MAP_X 15
 #define MAP_Y 15
@@ -18,7 +19,7 @@
 
 void init_app();
 
-void run(int map[MAP_X][MAP_Y]);
+void run(int map[MAP_X][MAP_Y], list_t*);
 
 void move(alien_t*, int[MAP_X][MAP_Y]);
 

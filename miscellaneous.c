@@ -39,6 +39,19 @@ void append(list_t *list, alien_t *content) {
     temp->next = new_node;
 }
 
+alien_t* get_by_id(list_t *list, int id){
+    if(list == NULL){
+        return NULL;
+    }
+    node_t *current = list->element;
+    while (current != NULL){
+        if(current->alien->id == id){
+            return current->alien;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
 
 void destroy_list(list_t *list) {
     node_t *head = list->element;

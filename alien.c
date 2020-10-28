@@ -3,7 +3,6 @@
 //
 
 #include "alien.h"
-#include "stdio.h"
 #include <stdlib.h>
 
 void init_alien(alien_t **alien, int id, int offset, int period, int exec_time) {
@@ -17,5 +16,8 @@ void init_alien(alien_t **alien, int id, int offset, int period, int exec_time) 
     (*alien)->x = 1;
     (*alien)->y = 0;
     (*alien)->direction = 1;
+    (*alien)->r = rand();
+    (*alien)->g = rand();
+    (*alien)->b = rand();
     return;
 }

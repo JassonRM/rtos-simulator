@@ -4,6 +4,8 @@
 #include "gui.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
 
 const float FPS = 30.0;
 
@@ -21,7 +23,7 @@ void init_app() {
     srand(time(NULL));
 }
 
-void run(int map[MAP_Y][MAP_X]) {
+void run(int map[MAP_Y][MAP_X], list_t *alien_list) {
     ALLEGRO_DISPLAY *display = al_create_display(WIDTH, HEIGHT);
     char *window_title = "RTOS Simulator";
     al_set_window_title(display, window_title);
@@ -34,10 +36,10 @@ void run(int map[MAP_Y][MAP_X]) {
     al_register_event_source(event_queue, al_get_timer_event_source(timer));
 
     block = al_load_bitmap("assets/block.png");
-    martian = al_load_bitmap("assets/martian_blue.png");
+    martian = al_load_bitmap("assets/martian.png");
 
     int cell_size = 100;
-    int offset_x = 200;
+    int offset_x = 300;
 
     bool running = true;
     al_start_timer(timer);
@@ -55,9 +57,12 @@ void run(int map[MAP_Y][MAP_X]) {
             default:
                 break;
         }
+        int id;
+        alien_t *alien;
         for (int i = 0; i < MAP_X; i++) {
             for (int j = 0; j < MAP_Y; j++) {
-                switch (map[j][i]) {
+                id = map[j][i];
+                switch (id) {
                     case 0:
                         break;
                     case -1:
@@ -65,12 +70,27 @@ void run(int map[MAP_Y][MAP_X]) {
                                               cell_size, NULL);
                         break;
                     default:
-                        al_draw_scaled_bitmap(martian, 0, 0, 213, 428, cell_size * i + offset_x, cell_size * j,
+                        alien = get_by_id(alien_list, id);
+                        al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j, cell_size * i + offset_x + cell_size, cell_size * j + cell_size, al_map_rgb(alien->r, alien->g, alien->b));
+                        al_draw_scaled_bitmap(martian, 0, 0, 428, 428, cell_size * i + offset_x, cell_size * j,
                                               cell_size,
                                               cell_size, NULL);
                         break;
                 }
             }
+        }
+        if(alien_list != NULL && alien_list->element != NULL){
+            int current_position = 0;
+            node_t *current = alien_list->element;
+            ALLEGRO_FONT *font = al_load_font("assets/arial.ttf", 16, 0);
+            do {
+                // Draw energy bars
+                al_draw_text(font, al_map_rgb(0, 0, 0), current_position * 100 + 50, 50, NULL, "1");
+                al_draw_filled_rectangle(current_position * 100, 0, current_position * 100 + cell_size, cell_size, al_map_rgb(alien->r, alien->g, alien->b));
+                al_draw_scaled_bitmap(martian, 0, 0, 428, 428, current_position * 100, 0,
+                                      cell_size,
+                                      cell_size, NULL);
+            } while (current->next != NULL);
         }
         al_flip_display();
     }
