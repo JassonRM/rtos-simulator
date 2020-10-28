@@ -4,7 +4,6 @@ LIBS = `pkg-config --cflags --libs allegro-5 allegro_image-5 allegro_primitives-
 DEPS = %.h
 TARGET = rtos-simulator
 OBJFILES = main.o gui.o alien.o scheduler.o miscellaneous.o report.o
-#OBJFILES = scheduler_test.o gui.o alien.o scheduler.o miscellaneous.o report.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

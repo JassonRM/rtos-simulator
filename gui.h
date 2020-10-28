@@ -5,10 +5,19 @@
 #ifndef RTOS_SIMULATOR_GUI_H
 #define RTOS_SIMULATOR_GUI_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "allegro5/allegro5.h"
 #include "allegro5/allegro_image.h"
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
+#include "allegro5/allegro_font.h"
+#include <allegro5/allegro_ttf.h>
+
 #include "alien.h"
 #include "miscellaneous.h"
+
 
 #define WIDTH 1800
 #define HEIGHT 1500

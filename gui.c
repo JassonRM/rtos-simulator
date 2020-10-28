@@ -2,10 +2,7 @@
 // Created by jasson on 25/10/20.
 //
 #include "gui.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <allegro5/allegro_font.h>
-#include <allegro5/allegro_primitives.h>
+
 
 const float FPS = 30.0;
 
@@ -20,6 +17,9 @@ void init_app() {
     al_install_keyboard();
     al_install_mouse();
     al_init_image_addon();
+    al_init_font_addon();
+    al_init_ttf_addon();
+    al_init_primitives_addon();
     srand(time(NULL));
 }
 
@@ -84,7 +84,8 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list) {
                                                   cell_size, NULL);
 
                             // Draw energy bar
-                            al_draw_filled_rectangle(0, current_position * 100, cell_size, current_position * 100 + cell_size,
+                            al_draw_filled_rectangle(0, current_position * 100, cell_size,
+                                                     current_position * 100 + cell_size,
                                                      al_map_rgb(alien->r, alien->g, alien->b));
                             al_draw_scaled_bitmap(martian, 0, 0, 428, 428, 0, current_position * 100,
                                                   cell_size,
