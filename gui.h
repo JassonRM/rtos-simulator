@@ -7,6 +7,7 @@
 
 #include "allegro5/allegro5.h"
 #include "allegro5/allegro_image.h"
+#include "alien.h"
 
 #define WIDTH 1700
 #define HEIGHT 1500
@@ -18,5 +19,7 @@
 void init_app();
 
 void run(int map[MAP_X][MAP_Y]);
+
+void move(alien_t*, int[MAP_X][MAP_Y]);
 
 void destroy();

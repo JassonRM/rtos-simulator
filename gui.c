@@ -3,6 +3,7 @@
 //
 #include "gui.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 const float FPS = 30.0;
 
@@ -17,6 +18,7 @@ void init_app() {
     al_install_keyboard();
     al_install_mouse();
     al_init_image_addon();
+    srand(time(NULL));
 }
 
 void run(int map[MAP_X][MAP_Y]) {
@@ -56,16 +58,17 @@ void run(int map[MAP_X][MAP_Y]) {
         for (int i = 0; i < MAP_X; i++) {
             for (int j = 0; j < MAP_Y; j++) {
                 switch (map[j][i]) {
+                    case 0:
+                        break;
                     case -1:
                         al_draw_scaled_bitmap(block, 0, 0, 48, 48, cell_size * i + offset_x, cell_size * j, cell_size,
                                               cell_size, NULL);
                         break;
-                    case 1:
-                        al_draw_scaled_bitmap(martian, 0, 0, 213, 428, cell_size * i + offset_x, cell_size * j, cell_size,
+                    default:
+                        al_draw_scaled_bitmap(martian, 0, 0, 213, 428, cell_size * i + offset_x, cell_size * j,
+                                              cell_size,
                                               cell_size, NULL);
                         break;
-                    default:
-                        continue;
                 }
             }
         }
@@ -73,6 +76,53 @@ void run(int map[MAP_X][MAP_Y]) {
     }
     destroy();
 }
+
+void move(alien_t *alien, int map[MAP_X][MAP_Y]) {
+    bool done = false;
+    int direction;
+
+    printf("Current: %d", map[alien->x][alien->y]);
+
+    while (!done) {
+        direction = rand() % 4;
+        switch (direction) {
+            case 0:
+                if (alien->x > 0 && map[alien->x - 1][alien->y] == 0) {
+                    map[alien->x][alien->y] = 0;
+                    alien->x -= 1;
+                    map[alien->x][alien->y] = alien->id;
+                    done = true;
+                }
+                break;
+            case 1:
+                if (alien->x < MAP_X - 1 && map[alien->x + 1][alien->y] == 0) {
+                    map[alien->x][alien->y] = 0;
+                    alien->x += 1;
+                    map[alien->x][alien->y] = alien->id;
+                    done = true;
+                }
+                break;
+            case 2:
+                if (alien->y > 0 && map[alien->x][alien->y - 1] == 0) {
+                    map[alien->x][alien->y] = 0;
+                    alien->y -= 1;
+                    map[alien->x][alien->y] = alien->id;
+                    done = true;
+                }
+                break;
+            case 3:
+                if (alien->y < MAP_Y - 1 && map[alien->x][alien->y + 1] == 0) {
+                    map[alien->x][alien->y] = 0;
+                    alien->y += 1;
+                    map[alien->x][alien->y] = alien->id;
+                    done = true;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+};
 
 void destroy() {
     al_destroy_display(display);

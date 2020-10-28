@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=
-LIBS = `pkg-config --cflags --libs allegro-5 allegro_image-5`
+LIBS = `pkg-config --cflags --libs allegro-5 allegro_image-5` -pthread
 DEPS = %.h
 TARGET = rtos-simulator
 OBJFILES = main.o gui.o alien.o scheduler.o miscellaneous.o
