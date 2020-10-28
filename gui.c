@@ -13,11 +13,6 @@ ALLEGRO_BITMAP *block;
 ALLEGRO_BITMAP *martian;
 
 void init_app() {
-    ALLEGRO_MONITOR_INFO info;
-    al_get_monitor_info(ALLEGRO_DEFAULT_DISPLAY_ADAPTER, &info);
-    printf("X: %d\n", info.x2 - info.x1);
-    printf("Y: %d\n", info.y2);
-
     al_init();
     al_install_keyboard();
     al_install_mouse();
@@ -61,11 +56,11 @@ void run(int map[MAP_X][MAP_Y]) {
         for (int i = 0; i < MAP_X; i++) {
             for (int j = 0; j < MAP_Y; j++) {
                 switch (map[j][i]) {
-                    case 1:
+                    case -1:
                         al_draw_scaled_bitmap(block, 0, 0, 48, 48, cell_size * i + offset_x, cell_size * j, cell_size,
                                               cell_size, NULL);
                         break;
-                    case 2:
+                    case 1:
                         al_draw_scaled_bitmap(martian, 0, 0, 213, 428, cell_size * i + offset_x, cell_size * j, cell_size,
                                               cell_size, NULL);
                         break;

@@ -26,7 +26,7 @@ void init_list(list_t *list, alien_t *content);
 
 void append(list_t *list, alien_t *content);
 
-void  destroy_list(list_t *list);
+void destroy_list(list_t *list);
 
 void print(list_t *list);
 
