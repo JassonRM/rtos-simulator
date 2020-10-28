@@ -1,8 +1,10 @@
 #include "gui.h"
+#include "report.h"
 #include "miscellaneous.h"
 
 int main(int argc, char** argv) {
-    init_app();
+//    init_app();
+    report_init_app();
 
     list_t *list;
     new_list(&list);
@@ -27,6 +29,8 @@ int main(int argc, char** argv) {
                              {-1, 0, 0, -1, -1, 0, 0, 0, -1, -1, -1, -1, 0, 0, -1},
                              {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
 
-    run(map);
+
+//    run(map);
+    report_run(4);
     return 0;
 }
