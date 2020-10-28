@@ -23,7 +23,7 @@ void init_app() {
     srand(time(NULL));
 }
 
-void run(int map[MAP_Y][MAP_X], list_t *alien_list) {
+void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
     ALLEGRO_DISPLAY *display = al_create_display(WIDTH, HEIGHT);
     char *window_title = "RTOS Simulator";
     al_set_window_title(display, window_title);
@@ -75,7 +75,9 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list) {
                     default:
                         // Alien
                         alien = get_by_id(alien_list, id);
+                        printf("Searching alien id: %d\n", id);
                         if (alien != NULL) {
+                            printf("Alien id: %d\n", alien->id);
                             al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j,
                                                      cell_size * i + offset_x + cell_size, cell_size * j + cell_size,
                                                      al_map_rgb(alien->r, alien->g, alien->b));
@@ -89,6 +91,16 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list) {
                             al_draw_scaled_bitmap(martian, 0, 0, 428, 428, 0, current_position * 100,
                                                   cell_size,
                                                   cell_size, NULL);
+                            float energy = alien->exec_time / (float) *max_energy;
+                            int energy_bar = energy * 2 * cell_size;
+                            ALLEGRO_COLOR color;
+                            if(energy > 0.2){
+                                color = al_map_rgb(0, 200, 0);
+                            }else{
+                                color = al_map_rgb(200, 0, 0);
+                            }
+                            al_draw_filled_rectangle(100, current_position * cell_size, cell_size + energy_bar, current_position * cell_size + cell_size, color);
+                            al_draw_rectangle(100, current_position * cell_size, cell_size * 3, current_position * cell_size + cell_size, al_map_rgb(0, 0, 0), 2);
                             current_position++;
                         }
                         break;
