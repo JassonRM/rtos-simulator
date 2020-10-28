@@ -59,38 +59,41 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list) {
         }
         int id;
         alien_t *alien;
+        int current_position = 0;
         for (int i = 0; i < MAP_X; i++) {
             for (int j = 0; j < MAP_Y; j++) {
                 id = map[j][i];
                 switch (id) {
                     case 0:
+                        // Empty space
                         break;
                     case -1:
+                        // Block
                         al_draw_scaled_bitmap(block, 0, 0, 48, 48, cell_size * i + offset_x, cell_size * j, cell_size,
                                               cell_size, NULL);
                         break;
                     default:
+                        // Alien
                         alien = get_by_id(alien_list, id);
-                        al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j, cell_size * i + offset_x + cell_size, cell_size * j + cell_size, al_map_rgb(alien->r, alien->g, alien->b));
-                        al_draw_scaled_bitmap(martian, 0, 0, 428, 428, cell_size * i + offset_x, cell_size * j,
-                                              cell_size,
-                                              cell_size, NULL);
+                        if (alien != NULL) {
+                            al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j,
+                                                     cell_size * i + offset_x + cell_size, cell_size * j + cell_size,
+                                                     al_map_rgb(alien->r, alien->g, alien->b));
+                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, cell_size * i + offset_x, cell_size * j,
+                                                  cell_size,
+                                                  cell_size, NULL);
+
+                            // Draw energy bar
+                            al_draw_filled_rectangle(0, current_position * 100, cell_size, current_position * 100 + cell_size,
+                                                     al_map_rgb(alien->r, alien->g, alien->b));
+                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, 0, current_position * 100,
+                                                  cell_size,
+                                                  cell_size, NULL);
+                            current_position++;
+                        }
                         break;
                 }
             }
-        }
-        if(alien_list != NULL && alien_list->element != NULL){
-            int current_position = 0;
-            node_t *current = alien_list->element;
-            ALLEGRO_FONT *font = al_load_font("assets/arial.ttf", 16, 0);
-            do {
-                // Draw energy bars
-                al_draw_text(font, al_map_rgb(0, 0, 0), current_position * 100 + 50, 50, NULL, "1");
-                al_draw_filled_rectangle(current_position * 100, 0, current_position * 100 + cell_size, cell_size, al_map_rgb(alien->r, alien->g, alien->b));
-                al_draw_scaled_bitmap(martian, 0, 0, 428, 428, current_position * 100, 0,
-                                      cell_size,
-                                      cell_size, NULL);
-            } while (current->next != NULL);
         }
         al_flip_display();
     }
