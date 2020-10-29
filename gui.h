@@ -19,8 +19,8 @@
 #include "miscellaneous.h"
 
 
-#define WIDTH 1800
-#define HEIGHT 1500
+#define WIDTH 900
+#define HEIGHT 850
 #define MAP_X 15
 #define MAP_Y 15
 
@@ -33,3 +33,7 @@ void run(int map[MAP_X][MAP_Y], list_t*, int* max_energy);
 void move(alien_t*, int[MAP_X][MAP_Y]);
 
 void destroy();
+
+void automatic_mode();
+
+void manual_mode();

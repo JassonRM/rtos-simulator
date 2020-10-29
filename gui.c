@@ -11,6 +11,7 @@ ALLEGRO_EVENT_QUEUE *event_queue;
 ALLEGRO_TIMER *timer;
 ALLEGRO_BITMAP *block;
 ALLEGRO_BITMAP *martian;
+ALLEGRO_FONT *font;
 
 void init_app() {
     al_init();
@@ -37,9 +38,11 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
 
     block = al_load_bitmap("assets/block.png");
     martian = al_load_bitmap("assets/martian.png");
+    font = al_load_font("assets/arial.ttf", 16, 0);
 
-    int cell_size = 100;
-    int offset_x = 300;
+    int cell_size = 50;
+    int offset_x = 3 * cell_size;
+    int offset_y = cell_size;
 
     bool running = true;
     al_start_timer(timer);
@@ -48,15 +51,40 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
 
         ALLEGRO_EVENT event;
         al_wait_for_event(event_queue, &event);
+        int mouse_x, mouse_y;
         switch (event.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 running = false;
                 break;
             case ALLEGRO_EVENT_KEY_DOWN:
+                if(event.keyboard.keycode == ALLEGRO_KEY_X){
+                    running = false;
+                }
                 break;
+            case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+                mouse_x = event.mouse.x;
+                mouse_y = event.mouse.y;
+                if(mouse_y > 20 && mouse_y < 80){
+                    if(mouse_x > 200 + offset_x && mouse_x < 400 + offset_x){
+                        automatic_mode();
+                    }else if(mouse_x > 500 + offset_x && mouse_x < 750 + offset_x){
+                        manual_mode();
+                    }
+                }
             default:
                 break;
         }
+        // Draw toolbar
+        // Auto mode
+        al_draw_filled_rounded_rectangle(2 * cell_size + offset_x, cell_size / 4, 4 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(100, 100, 200));
+        al_draw_text(font, al_map_rgb(0, 0, 0), 2 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Auto mode");
+
+        // Manual mode
+        al_draw_filled_rounded_rectangle(5 * cell_size + offset_x, cell_size / 4, 7.5 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(100, 100, 200));
+        al_draw_text(font, al_map_rgb(0, 0, 0), 5 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Manual mode");
+
+
+        // Draw map and status
         int id;
         alien_t *alien;
         int current_position = 0;
@@ -69,27 +97,25 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
                         break;
                     case -1:
                         // Block
-                        al_draw_scaled_bitmap(block, 0, 0, 48, 48, cell_size * i + offset_x, cell_size * j, cell_size,
+                        al_draw_scaled_bitmap(block, 0, 0, 48, 48, cell_size * i + offset_x, cell_size * j + offset_y, cell_size,
                                               cell_size, NULL);
                         break;
                     default:
                         // Alien
                         alien = get_by_id(alien_list, id);
-//                        printf("Searching alien id: %d\n", id);
                         if (alien != NULL) {
-//                            printf("Alien id: %d\n", alien->id);
-                            al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j,
-                                                     cell_size * i + offset_x + cell_size, cell_size * j + cell_size,
+                            al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j + offset_y,
+                                                     cell_size * i + offset_x + cell_size, cell_size * j + cell_size + offset_y,
                                                      al_map_rgb(alien->r, alien->g, alien->b));
-                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, cell_size * i + offset_x, cell_size * j,
+                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, cell_size * i + offset_x, cell_size * j + offset_y,
                                                   cell_size,
                                                   cell_size, NULL);
 
                             // Draw energy bar
-                            al_draw_filled_rectangle(0, current_position * 100, cell_size,
-                                                     current_position * 100 + cell_size,
+                            al_draw_filled_rectangle(0, current_position * cell_size, cell_size,
+                                                     current_position * cell_size + cell_size,
                                                      al_map_rgb(alien->r, alien->g, alien->b));
-                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, 0, current_position * 100,
+                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, 0, current_position * cell_size,
                                                   cell_size,
                                                   cell_size, NULL);
                             float energy = alien->exec_time / (float) *max_energy;
@@ -100,8 +126,8 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
                             }else{
                                 color = al_map_rgb(200, 0, 0);
                             }
-                            al_draw_filled_rectangle(100, current_position * cell_size, cell_size + energy_bar, current_position * cell_size + cell_size, color);
-                            al_draw_rectangle(100, current_position * cell_size, cell_size * 3, current_position * cell_size + cell_size, al_map_rgb(0, 0, 0), 2);
+                            al_draw_filled_rectangle(cell_size, current_position * cell_size, cell_size + energy_bar, current_position * cell_size + cell_size, color);
+                            al_draw_rectangle(cell_size, current_position * cell_size, cell_size * 3, current_position * cell_size + cell_size, al_map_rgb(0, 0, 0), 2);
                             current_position++;
                         }
                         break;
@@ -161,4 +187,12 @@ void destroy() {
     al_destroy_display(display);
     al_destroy_timer(timer);
     al_destroy_bitmap(block);
+}
+
+void automatic_mode(){
+
+}
+
+void manual_mode(){
+
 }
