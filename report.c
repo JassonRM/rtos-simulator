@@ -13,7 +13,7 @@ ALLEGRO_FONT *report_font;
 
 const float REPORT_FPS = 30.0;
 
-void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *report_edf) {
+void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *report_edf, int page) {
     int row_height = 50;
     int report_height = row_height * (num_aliens + 3) + 40;
     report_display = al_create_display(REPORT_WIDTH, report_height);
@@ -49,10 +49,10 @@ void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *repor
             default:
                 break;
         }
-        draw_aliens(row_height, report_height, aliens, units, x_offset, y_offset);
-        draw_report(row_height, report_height, report_rm, units, x_offset, y_offset, 0);
-        draw_report(row_height, report_height, report_edf, units, x_offset, y_offset, 1);
-        draw_axis(num_aliens, row_height, report_height, aliens, units, x_offset, y_offset);
+        draw_aliens(row_height, report_height, aliens, units, x_offset, y_offset, page);
+        draw_report(row_height, report_height, report_rm, units, x_offset, y_offset, 0, page);
+        draw_report(row_height, report_height, report_edf, units, x_offset, y_offset, 1, page);
+        draw_axis(num_aliens, row_height, report_height, aliens, units, x_offset, y_offset, page);
 
 
         al_flip_display();
@@ -60,7 +60,8 @@ void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *repor
     report_destroy();
 }
 
-void draw_axis(int num_aliens, int row_height, int height, list_t *aliens, int units, float x_offset, float y_offset) {
+void draw_axis(int num_aliens, int row_height, int height, list_t *aliens, int units, float x_offset, float y_offset,
+               int page) {
     float step_width = units * UNIT_SIDE;
     int steps = REPORT_WIDTH / step_width;
     x_offset += (REPORT_WIDTH - step_width * steps) / 2;
@@ -69,7 +70,7 @@ void draw_axis(int num_aliens, int row_height, int height, list_t *aliens, int u
     for (int i = 0; i < steps - 1; i += 1) {
         al_draw_line(x_offset + step_width * i, y_offset, x_offset + step_width * i, height - y_offset,
                      al_map_rgb(0, 0, 0), 2);
-        sprintf(str, "%d", i * units);
+        sprintf(str, "%d", i * units + page * (steps - 2) * units);
         al_draw_text(report_font, al_map_rgb(0, 0, 0), x_offset + step_width * i - 4, height - 2 * y_offset / 3,
                      ALLEGRO_ALIGN_LEFT,
                      str);
@@ -101,7 +102,7 @@ void draw_axis(int num_aliens, int row_height, int height, list_t *aliens, int u
 
 }
 
-void draw_aliens(int row_height, int height, list_t *aliens, int units, float x_offset, float y_offset) {
+void draw_aliens(int row_height, int height, list_t *aliens, int units, float x_offset, float y_offset, int page) {
 
     float step_width = units * UNIT_SIDE;
     int steps = REPORT_WIDTH / step_width;
@@ -125,28 +126,39 @@ void draw_aliens(int row_height, int height, list_t *aliens, int units, float x_
         y = height - y_offset - (i + 3) * row_height;
         j = 0;
         k = 0;
-        while (x <= REPORT_WIDTH - temp->alien->exec_time * UNIT_SIDE - step_width) {
+        while (j < (steps - 2) * units * (page + 1)) {
             if (j < temp->alien->offset) {
                 j += 1;
-                x += UNIT_SIDE;
+                if (page == 0) {
+                    x += UNIT_SIDE;
+                }
                 continue;
             }
             if (k % temp->alien->period == 0) {
-                al_draw_filled_rectangle(x, y, x + UNIT_SIDE * temp->alien->exec_time, y + UNIT_SIDE,
-                                         al_map_rgb(temp->alien->r, temp->alien->g, temp->alien->b));
-                al_draw_rectangle(x, y, x + UNIT_SIDE * temp->alien->exec_time, y + UNIT_SIDE, al_map_rgb(0, 0, 0), 1);
+                for (int v = 0; v < temp->alien->exec_time; v += 1) {
+                    if (j >= (steps - 2) * units * page) {
+                        al_draw_filled_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE,
+                                                 al_map_rgb(temp->alien->r, temp->alien->g, temp->alien->b));
+                        x += UNIT_SIDE;
+                    }
+                    j += 1;
+                    k += 1;
+                    if (j >= (steps - 2) * units * (page + 1)) break;
+                }
             }
-            x += UNIT_SIDE;
             k += 1;
+            j += 1;
+            if (j > (steps - 2) * units * page) {
+                x += UNIT_SIDE;
+            }
         }
         i += 1;
         temp = temp->next;
     }
-
-
 }
 
-void draw_report(int row_height, int height, list_t *report, int units, float x_offset, float y_offset, int mode) {
+void
+draw_report(int row_height, int height, list_t *report, int units, float x_offset, float y_offset, int mode, int page) {
     mode += 1;
     float step_width = units * UNIT_SIDE;
     int steps = REPORT_WIDTH / step_width;
@@ -164,24 +176,30 @@ void draw_report(int row_height, int height, list_t *report, int units, float x_
 
     float x, y;
     x = x_offset;
+    int j = 0;
     while (temp != NULL) {
+        if (j < (steps - 2) * units * (page)) {
+            j += 1;
+            temp = temp->next;
+            continue;
+        }
         if (temp->alien != NULL) {
             if (temp->alien->id == -1) {
                 al_draw_filled_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE,
                                          al_map_rgb(255 - temp->alien->r, 255 - temp->alien->g, 255 - temp->alien->b));
-                al_draw_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE, al_map_rgb(0, 0, 0), 1);
                 break;
             }
-            if (x > REPORT_WIDTH - temp->alien->exec_time * UNIT_SIDE - step_width) {
+            if (j >= (steps - 2) * units * (page + 1)) {
                 break;
             }
             y = height - y_offset - mode * row_height;
             al_draw_filled_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE,
                                      al_map_rgb(temp->alien->r, temp->alien->g, temp->alien->b));
-            al_draw_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE, al_map_rgb(0, 0, 0), 1);
+//            al_draw_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE, al_map_rgb(0, 0, 0), 1);
         }
         temp = temp->next;
         x += UNIT_SIDE;
+        j += 1;
     }
 }
 
