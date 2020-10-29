@@ -17,10 +17,16 @@ alien_t *step(list_t *aliens, int mode, int cycle) {
     }
     alien_t *next = NULL;
     while (temp != NULL) {
-        if (cycle > temp->alien->offset && cycle % temp->alien->period == temp->alien->offset) {
+        if (cycle < temp->alien->offset) {
+            temp = temp->next;
+            continue;
+        } else if ((cycle - temp->alien->offset) % temp->alien->period == 0 && cycle != temp->alien->offset) {
             if (temp->alien->rem_time != 0) {
                 printf("ERROR scheduling task\n");
-                return NULL;
+                alien_t *alien;
+                int m = 0;
+                init_alien(&alien, -1, 0, 0, 0, &m);
+                return alien;
             }
             temp->alien->rem_time = temp->alien->exec_time;
         }

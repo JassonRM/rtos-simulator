@@ -34,23 +34,31 @@ int main(int argc, char **argv) {
     list_t *list;
     new_list(&list);
     alien_t *alien;
-    init_alien(&alien, 1, 1, 4, 1, &MAX_ENERGY);
+    init_alien(&alien, 1, 3, 4, 2, &MAX_ENERGY);
     append(list, alien);
-    init_alien(&alien, 2, 0, 5, 2, &MAX_ENERGY);
+    init_alien(&alien, 2, 1, 4, 2, &MAX_ENERGY);
     append(list, alien);
 
     pthread_t logic_thread;
     //pthread_create(&logic_thread, NULL, update, alien);
 
-    list_t *report;
-    new_list(&report);
+    list_t *report_rm;
+    list_t *report_edf;
+    new_list(&report_rm);
+    new_list(&report_edf);
     alien_t *temp;
-    for (int i = 0; i < 15; ++i) {
+    for (int i = 0; i < 15; i += 1) {
+        temp = step(list, 1, i);
+        append(report_edf, temp);
+    }
+    reset_elements(list);
+
+    for (int i = 0; i < 15; i += 1) {
         temp = step(list, 0, i);
-        append(report, temp);
+        append(report_rm, temp);
     }
 
-    run(map, list, &MAX_ENERGY);
-    report_run(2, list, report, 0);
+//    run(map, list, &MAX_ENERGY);
+    report_run(2, list, report_rm, report_edf);
     return 0;
 }

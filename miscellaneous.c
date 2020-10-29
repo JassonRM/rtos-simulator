@@ -39,13 +39,13 @@ void append(list_t *list, alien_t *content) {
     temp->next = new_node;
 }
 
-alien_t* get_by_id(list_t *list, int id){
-    if(list == NULL){
+alien_t *get_by_id(list_t *list, int id) {
+    if (list == NULL) {
         return NULL;
     }
     node_t *current = list->element;
-    while (current != NULL){
-        if(current->alien->id == id){
+    while (current != NULL) {
+        if (current->alien->id == id) {
             return current->alien;
         }
         current = current->next;
@@ -66,6 +66,20 @@ void destroy_list(list_t *list) {
     free(list);
 }
 
+void reset_elements(list_t *list) {
+    if (list == NULL) {
+        return;
+    }
+    node_t *head = list->element;
+    node_t *temp = head;
+    if (head == NULL) {
+        return;
+    }
+    while (temp != NULL) {
+        temp->alien->rem_time = temp->alien->exec_time;
+        temp = temp->next;
+    }
+}
 
 void print(list_t *list) {
     if (list == NULL) {

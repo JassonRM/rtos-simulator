@@ -19,14 +19,7 @@
 #define UNIT_SIDE 15
 #endif //RTOS_SIMULATOR_REPORT_H
 
-typedef struct report_block {
-    int id;
-    int start;
-    int length;
-    int r, g, b;
-} report_block_t;
-
-void report_run(int num_aliens, list_t *aliens, list_t *report, int mode);
+void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *report_edf);
 
 void draw_axis(int num_aliens, int row_height, int height, list_t *aliens, int units, float x_offset, float y_offset);
 

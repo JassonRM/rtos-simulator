@@ -26,9 +26,11 @@ void init_list(list_t *list, alien_t *content);
 
 void append(list_t *list, alien_t *content);
 
-alien_t* get_by_id(list_t *list, int id);
+alien_t *get_by_id(list_t *list, int id);
 
 void destroy_list(list_t *list);
+
+void reset_elements(list_t *list);
 
 void print(list_t *list);
 

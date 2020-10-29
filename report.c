@@ -13,7 +13,7 @@ ALLEGRO_FONT *report_font;
 
 const float REPORT_FPS = 30.0;
 
-void report_run(int num_aliens, list_t *aliens, list_t *report, int mode) {
+void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *report_edf) {
     int row_height = 50;
     int report_height = row_height * (num_aliens + 3) + 40;
     report_display = al_create_display(REPORT_WIDTH, report_height);
@@ -50,7 +50,8 @@ void report_run(int num_aliens, list_t *aliens, list_t *report, int mode) {
                 break;
         }
         draw_aliens(row_height, report_height, aliens, units, x_offset, y_offset);
-        draw_report(row_height, report_height, report, units, x_offset, y_offset, mode);
+        draw_report(row_height, report_height, report_rm, units, x_offset, y_offset, 0);
+        draw_report(row_height, report_height, report_edf, units, x_offset, y_offset, 1);
         draw_axis(num_aliens, row_height, report_height, aliens, units, x_offset, y_offset);
 
 
@@ -118,19 +119,25 @@ void draw_aliens(int row_height, int height, list_t *aliens, int units, float x_
 
     float x, y;
     int i = 0;
-    int j;
+    int j, k;
     while (temp != NULL) {
         x = x_offset;
         y = height - y_offset - (i + 3) * row_height;
         j = 0;
-        while (x < REPORT_WIDTH - temp->alien->exec_time * UNIT_SIDE) {
-            if (j % temp->alien->period == temp->alien->offset) {
+        k = 0;
+        while (x <= REPORT_WIDTH - temp->alien->exec_time * UNIT_SIDE - step_width) {
+            if (j < temp->alien->offset) {
+                j += 1;
+                x += UNIT_SIDE;
+                continue;
+            }
+            if (k % temp->alien->period == 0) {
                 al_draw_filled_rectangle(x, y, x + UNIT_SIDE * temp->alien->exec_time, y + UNIT_SIDE,
                                          al_map_rgb(temp->alien->r, temp->alien->g, temp->alien->b));
                 al_draw_rectangle(x, y, x + UNIT_SIDE * temp->alien->exec_time, y + UNIT_SIDE, al_map_rgb(0, 0, 0), 1);
             }
             x += UNIT_SIDE;
-            j += 1;
+            k += 1;
         }
         i += 1;
         temp = temp->next;
@@ -159,6 +166,15 @@ void draw_report(int row_height, int height, list_t *report, int units, float x_
     x = x_offset;
     while (temp != NULL) {
         if (temp->alien != NULL) {
+            if (temp->alien->id == -1) {
+                al_draw_filled_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE,
+                                         al_map_rgb(255 - temp->alien->r, 255 - temp->alien->g, 255 - temp->alien->b));
+                al_draw_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE, al_map_rgb(0, 0, 0), 1);
+                break;
+            }
+            if (x > REPORT_WIDTH - temp->alien->exec_time * UNIT_SIDE - step_width) {
+                break;
+            }
             y = height - y_offset - mode * row_height;
             al_draw_filled_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE,
                                      al_map_rgb(temp->alien->r, temp->alien->g, temp->alien->b));
