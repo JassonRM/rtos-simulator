@@ -20,7 +20,7 @@
 
 
 #define WIDTH 900
-#define HEIGHT 850
+#define HEIGHT 800
 #define MAP_X 15
 #define MAP_Y 15
 

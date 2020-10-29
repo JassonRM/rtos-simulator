@@ -33,6 +33,7 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
 
     ALLEGRO_EVENT_QUEUE *event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_keyboard_event_source());
+    al_register_event_source(event_queue, al_get_mouse_event_source());
     al_register_event_source(event_queue, al_get_display_event_source(display));
     al_register_event_source(event_queue, al_get_timer_event_source(timer));
 
@@ -43,6 +44,9 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
     int cell_size = 50;
     int offset_x = 3 * cell_size;
     int offset_y = cell_size;
+
+    int exec_time = 1;
+    int period = 1;
 
     bool running = true;
     al_start_timer(timer);
@@ -64,25 +68,88 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
                 mouse_x = event.mouse.x;
                 mouse_y = event.mouse.y;
-                if(mouse_y > 20 && mouse_y < 80){
-                    if(mouse_x > 200 + offset_x && mouse_x < 400 + offset_x){
+                if(mouse_y > 0 && mouse_y < cell_size){
+                    if(mouse_x > 0.5 * cell_size + offset_x && mouse_x < 2.5 * cell_size + offset_x){
                         automatic_mode();
-                    }else if(mouse_x > 500 + offset_x && mouse_x < 750 + offset_x){
+                    }else if(mouse_x > 3 * cell_size + offset_x && mouse_x < 5.5 * cell_size + offset_x){
                         manual_mode();
+                    }else if(mouse_x > 7.5 * cell_size + offset_x && mouse_x < 8.1 * cell_size + offset_x){
+                        // Sub exec time
+                        if(exec_time > 1){
+                            exec_time--;
+                        }
+                    }else if(mouse_x > 8.7 * cell_size + offset_x && mouse_x < 9.3 * cell_size + offset_x){
+                        // Add exec time
+                        if(exec_time < 99){
+                            exec_time++;
+                        }
+                    }else if(mouse_x > 10.8 * cell_size + offset_x && mouse_x < 11.4 * cell_size + offset_x) {
+                        // Sub period
+                        if (period > 1) {
+                            period--;
+                        }
+                    }else if(mouse_x > 12 * cell_size + offset_x && mouse_x < 12.6 * cell_size + offset_x) {
+                        // Add period
+                        if (period < 99) {
+                            period++;
+                        }
+                    }else if(mouse_x > 12.8 * cell_size + offset_x && mouse_x < 15 * cell_size + offset_x) {
+                        // Add martian
+                        alien_t *alien;
+                        init_alien(&alien, 3, 1, period, exec_time, max_energy);
+                        append(alien_list, alien);
+                        map[1][0] = 3;
                     }
                 }
+                break;
             default:
                 break;
         }
+        al_flush_event_queue(event_queue);
         // Draw toolbar
         // Auto mode
-        al_draw_filled_rounded_rectangle(2 * cell_size + offset_x, cell_size / 4, 4 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(100, 100, 200));
-        al_draw_text(font, al_map_rgb(0, 0, 0), 2 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Auto mode");
+        al_draw_filled_rounded_rectangle(0.5 * cell_size + offset_x, cell_size / 4, 2.5 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(0, 191, 255));
+        al_draw_text(font, al_map_rgb(0, 0, 0), 0.5 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Auto mode");
 
         // Manual mode
-        al_draw_filled_rounded_rectangle(5 * cell_size + offset_x, cell_size / 4, 7.5 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(100, 100, 200));
-        al_draw_text(font, al_map_rgb(0, 0, 0), 5 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Manual mode");
+        al_draw_filled_rounded_rectangle(3 * cell_size + offset_x, cell_size / 4, 5.5 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(0, 191, 255));
+        al_draw_text(font, al_map_rgb(0, 0, 0), 3 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Manual mode");
 
+        // Exec time
+        al_draw_text(font, al_map_rgb(0, 0, 0), 5.6 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Exec time:");
+
+        // Sub button
+        al_draw_filled_rounded_rectangle(7.5 * cell_size + offset_x, cell_size / 4, 8.1 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(0, 191, 255));
+        al_draw_text(font, al_map_rgb(0, 0, 0), 7.5 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "-");
+
+        // Exec time label
+        char exec_time_label[2];
+        sprintf(exec_time_label, "%d", exec_time);
+        al_draw_text(font, al_map_rgb(0, 0, 0), 8 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, exec_time_label);
+
+        // Plus button
+        al_draw_filled_rounded_rectangle(8.7 * cell_size + offset_x, cell_size / 4, 9.3 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(0, 191, 255));
+        al_draw_text(font, al_map_rgb(0, 0, 0), 8.7 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "+");
+
+        // Period
+        al_draw_text(font, al_map_rgb(0, 0, 0), 9.4 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Period:");
+
+        // Sub button
+        al_draw_filled_rounded_rectangle(10.8 * cell_size + offset_x, cell_size / 4, 11.4 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(0, 191, 255));
+        al_draw_text(font, al_map_rgb(0, 0, 0), 10.8 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "-");
+
+        // period label
+        char period_label[2];
+        sprintf(period_label, "%d", period);
+        al_draw_text(font, al_map_rgb(0, 0, 0), 11.3 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, period_label);
+
+        // Plus button
+        al_draw_filled_rounded_rectangle(12 * cell_size + offset_x, cell_size / 4, 12.6 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(0, 191, 255));
+        al_draw_text(font, al_map_rgb(0, 0, 0), 12 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "+");
+
+        // Add martian button
+        al_draw_filled_rounded_rectangle(12.8 * cell_size + offset_x, cell_size / 4, 15 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(0, 191, 255));
+        al_draw_text(font, al_map_rgb(0, 0, 0), 12.8 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Add martian");
 
         // Draw map and status
         int id;
@@ -190,9 +257,9 @@ void destroy() {
 }
 
 void automatic_mode(){
-
+    printf("Auto mode");
 }
 
 void manual_mode(){
-
+    printf("Manual mode");
 }
