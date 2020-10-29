@@ -26,14 +26,22 @@
 
 #endif //RTOS_SIMULATOR_GUI_H
 
+struct auto_args {
+    int (*map_ptr)[MAP_X];
+    list_t* alien_list;
+    int mode;
+    list_t* report_rm;
+    list_t* report_edf;
+};
+
 void init_app();
 
-void run(int map[MAP_X][MAP_Y], list_t*, int* max_energy);
+void run(int map[MAP_X][MAP_Y], list_t*, int* max_energy, list_t* report_rm, list_t* report_edf);
 
 void move(alien_t*, int[MAP_X][MAP_Y]);
 
 void destroy();
 
-void automatic_mode();
+void auto_mode(struct auto_args *args);
 
-void manual_mode();
+void next_clock(int map[MAP_X][MAP_Y], list_t* alien_list, int mode, list_t* report_rm, list_t* report_edf);

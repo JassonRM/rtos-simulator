@@ -2,6 +2,8 @@
 // Created by jasson on 25/10/20.
 //
 #include "gui.h"
+#include "scheduler.h"
+#include <pthread.h>
 
 
 const float FPS = 30.0;
@@ -12,6 +14,8 @@ ALLEGRO_TIMER *timer;
 ALLEGRO_BITMAP *block;
 ALLEGRO_BITMAP *martian;
 ALLEGRO_FONT *font;
+int cycle = 0;
+bool running, running_auto;
 
 void init_app() {
     al_init();
@@ -24,14 +28,14 @@ void init_app() {
     srand(time(NULL));
 }
 
-void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
+void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy,  list_t* report_rm, list_t* report_edf) {
     ALLEGRO_DISPLAY *display = al_create_display(WIDTH, HEIGHT);
     char *window_title = "RTOS Simulator";
     al_set_window_title(display, window_title);
 
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
 
-    ALLEGRO_EVENT_QUEUE *event_queue = al_create_event_queue();
+    event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_keyboard_event_source());
     al_register_event_source(event_queue, al_get_mouse_event_source());
     al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -48,7 +52,10 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
     int exec_time = 1;
     int period = 1;
 
-    bool running = true;
+    running = true;
+    running_auto = false;
+    int mode = 0;
+
     al_start_timer(timer);
     while (running) {
         al_clear_to_color(al_map_rgb(255, 255, 255));
@@ -70,9 +77,21 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
                 mouse_y = event.mouse.y;
                 if(mouse_y > 0 && mouse_y < cell_size){
                     if(mouse_x > 0.5 * cell_size + offset_x && mouse_x < 2.5 * cell_size + offset_x){
-                        automatic_mode();
+                        // Automatic mode
+                        running_auto = true;
+                        pthread_t auto_thread;
+                        int (*map_ptr)[MAP_X] = &map;
+                        struct auto_args args;
+                        args.map_ptr = map_ptr;
+                        args.alien_list = alien_list;
+                        args.mode = mode;
+                        args.report_rm = report_rm;
+                        args.report_edf = report_edf;
+                        pthread_create(&auto_thread, NULL, auto_mode, &args);
+
                     }else if(mouse_x > 3 * cell_size + offset_x && mouse_x < 5.5 * cell_size + offset_x){
-                        manual_mode();
+                        // Manual mode
+                        next_clock(map, alien_list, mode, report_rm, report_edf);
                     }else if(mouse_x > 7.5 * cell_size + offset_x && mouse_x < 8.1 * cell_size + offset_x){
                         // Sub exec time
                         if(exec_time > 1){
@@ -254,12 +273,40 @@ void destroy() {
     al_destroy_display(display);
     al_destroy_timer(timer);
     al_destroy_bitmap(block);
+    al_destroy_bitmap(martian);
+    al_destroy_event_queue(event_queue);
+    al_destroy_font(font);
 }
 
-void automatic_mode(){
-    printf("Auto mode");
-}
+void auto_mode(struct auto_args *args){
+     while (running){
+         next_clock(args->map_ptr, args->alien_list, args->mode, args->report_rm, args->report_edf);
+         sleep(1);
+     }
+};
 
-void manual_mode(){
-    printf("Manual mode");
+void next_clock(int map[MAP_X][MAP_Y], list_t* alien_list, int mode, list_t* report_rm, list_t* report_edf){
+    printf("Next");
+    alien_t *next_rm, *next_edf;
+    next_rm = step(alien_list, 0, cycle);
+    append(report_rm, next_rm);
+    next_edf = step(alien_list, 1, cycle);
+    append(report_edf, next_edf);
+    if(mode == 0){
+        if(next_rm != NULL) {
+            if(next_rm->id != -1) {
+                move(next_rm, map);
+            }
+        }else{
+            running = false;
+        }
+    }else{
+        if(next_edf != NULL) {
+            if(next_edf->id != -1) {
+                move(next_edf, map);
+            }
+        }else{
+            running = false;
+        }
+    }
 }
