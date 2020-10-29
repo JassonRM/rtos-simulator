@@ -55,6 +55,7 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy,  list_t* re
     running = true;
     running_auto = false;
     int mode = 0;
+    int aliens = 1;
 
     al_start_timer(timer);
     while (running) {
@@ -113,11 +114,19 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy,  list_t* re
                             period++;
                         }
                     }else if(mouse_x > 12.8 * cell_size + offset_x && mouse_x < 15 * cell_size + offset_x) {
-                        // Add martian
-                        alien_t *alien;
-                        init_alien(&alien, 3, 1, period, exec_time, max_energy);
-                        append(alien_list, alien);
-                        map[1][0] = 3;
+                        if(!running_auto) {
+                            // Add martian
+                            printf("New alien\n");
+                            alien_t *alien;
+                            init_alien(&alien, aliens, cycle, period, exec_time, max_energy);
+                            append(alien_list, alien);
+                            while (map[alien->y][alien->x] != 0) {
+                                alien->x = rand() % 15;
+                                alien->y = rand() % 15;
+                            }
+                            map[alien->y][alien->x] = aliens;
+                            aliens++;
+                        }
                     }
                 }
                 break;
@@ -226,39 +235,39 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy,  list_t* re
 }
 
 void move(alien_t *alien, int map[MAP_Y][MAP_X]) {
-    int direction = alien->direction;
+    int direction = rand() % 4;
     bool done = false;
     while (!done) {
         switch (direction) {
             case 0: // Left
-                if (alien->x > 0 && map[alien->x - 1][alien->y] == 0) {
-                    map[alien->x][alien->y] = 0;
+                if (alien->x > 0 && map[alien->y][alien->x - 1] == 0) {
+                    map[alien->y][alien->x] = 0;
                     alien->x -= 1;
-                    map[alien->x][alien->y] = alien->id;
+                    map[alien->y][alien->x] = alien->id;
                     done = true;
                 }
                 break;
             case 1: // Right
-                if (alien->x < MAP_X - 1 && map[alien->x + 1][alien->y] == 0) {
-                    map[alien->x][alien->y] = 0;
+                if (alien->x < MAP_X - 1 && map[alien->y][alien->x + 1] == 0) {
+                    map[alien->y][alien->x] = 0;
                     alien->x += 1;
-                    map[alien->x][alien->y] = alien->id;
+                    map[alien->y][alien->x] = alien->id;
                     done = true;
                 }
                 break;
             case 2: // Up
-                if (alien->y > 0 && map[alien->x][alien->y - 1] == 0) {
-                    map[alien->x][alien->y] = 0;
+                if (alien->y > 0 && map[alien->y - 1][alien->x] == 0) {
+                    map[alien->y][alien->x] = 0;
                     alien->y -= 1;
-                    map[alien->x][alien->y] = alien->id;
+                    map[alien->y][alien->x] = alien->id;
                     done = true;
                 }
                 break;
             case 3: // Down
-                if (alien->y < MAP_Y - 1 && map[alien->x][alien->y + 1] == 0) {
-                    map[alien->x][alien->y] = 0;
+                if (alien->y < MAP_Y - 1 && map[alien->y + 1][alien->x] == 0) {
+                    map[alien->y][alien->x] = 0;
                     alien->y += 1;
-                    map[alien->x][alien->y] = alien->id;
+                    map[alien->y][alien->x] = alien->id;
                     done = true;
                 }
                 break;
@@ -286,7 +295,7 @@ void auto_mode(struct auto_args *args){
 };
 
 void next_clock(int map[MAP_X][MAP_Y], list_t* alien_list, int mode, list_t* report_rm, list_t* report_edf){
-    printf("Next");
+    printf("Next\n");
     alien_t *next_rm, *next_edf;
     next_rm = step(alien_list, 0, cycle);
     append(report_rm, next_rm);
@@ -298,6 +307,7 @@ void next_clock(int map[MAP_X][MAP_Y], list_t* alien_list, int mode, list_t* rep
                 move(next_rm, map);
             }
         }else{
+            printf("Next RM null\n");
             running = false;
         }
     }else{
@@ -309,4 +319,5 @@ void next_clock(int map[MAP_X][MAP_Y], list_t* alien_list, int mode, list_t* rep
             running = false;
         }
     }
+    cycle++;
 }

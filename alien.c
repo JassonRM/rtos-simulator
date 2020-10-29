@@ -14,8 +14,8 @@ void init_alien(alien_t **alien, int id, int offset, int period, int exec_time, 
     (*alien)->period = period;
     (*alien)->exec_time = exec_time;
     (*alien)->rem_time = exec_time;
-    (*alien)->x = 1;
-    (*alien)->y = 0;
+    (*alien)->x = 0;
+    (*alien)->y = 1;
     (*alien)->direction = 1;
     (*alien)->r = rand();
     (*alien)->g = rand();
