@@ -38,9 +38,13 @@ int main(int argc, char **argv) {
     append(list, alien);
     init_alien(&alien, 2, 1, 8, 4, &MAX_ENERGY);
     append(list, alien);
+//    init_alien(&alien, 3, 1, 8, 4, &MAX_ENERGY);
+//    append(list, alien);
+//    init_alien(&alien, 4, 1, 8, 4, &MAX_ENERGY);
+//    append(list, alien);
 
     pthread_t logic_thread;
-    //pthread_create(&logic_thread, NULL, update, alien);
+//    pthread_create(&logic_thread, NULL, update, alien);
 
     list_t *report_rm;
     list_t *report_edf;
@@ -58,7 +62,17 @@ int main(int argc, char **argv) {
         append(report_rm, temp);
     }
 
-//    run(map, list, &MAX_ENERGY);
-    report_run(2, list, report_rm, report_edf, 2);
+    pthread_t report_thread;
+    struct arg_struct args;
+    args.num_aliens = size(list);
+    args.aliens = list;
+    args.report_rm = report_rm;
+    args.report_edf = report_edf;
+    args.page = 0;
+    pthread_create(&report_thread, NULL, report_run, &args);
+    run(map, list, &MAX_ENERGY);
+
+
+
     return 0;
 }

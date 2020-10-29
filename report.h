@@ -19,7 +19,15 @@
 #define UNIT_SIDE 15
 #endif //RTOS_SIMULATOR_REPORT_H
 
-void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *report_edf, int page);
+struct arg_struct {
+    int num_aliens;
+    list_t *aliens;
+    list_t *report_rm;
+    list_t *report_edf;
+    int page;
+};
+
+void report_run(struct arg_struct *args);
 
 void draw_axis(int num_aliens, int row_height, int height, list_t *aliens, int units, float x_offset, float y_offset,
                int page);
@@ -28,5 +36,9 @@ void draw_aliens(int row_height, int height, list_t *aliens, int units, float x_
 
 void
 draw_report(int row_height, int height, list_t *report, int units, float x_offset, float y_offset, int mode, int page);
+
+void draw_buttons(int height, int row_height, float x_offset, float y_offset);
+
+void check_state(int height, int row_height, float x_offset, float y_offset, int x, int y);
 
 void report_destroy();

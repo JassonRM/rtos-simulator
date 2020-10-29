@@ -95,3 +95,20 @@ void print(list_t *list) {
         temp = temp->next;
     }
 }
+
+int size(list_t *list) {
+    if (list == NULL) {
+        return 0;
+    }
+    node_t *head = list->element;
+    node_t *temp = head;
+    if (head == NULL) {
+        return 0;
+    }
+    int result = 0;
+    while (temp != NULL) {
+        result += 1;
+        temp = temp->next;
+    }
+    return result;
+}

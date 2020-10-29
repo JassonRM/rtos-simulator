@@ -10,10 +10,15 @@ ALLEGRO_EVENT_QUEUE *report_event_queue;
 ALLEGRO_TIMER *report_timer;
 ALLEGRO_FONT *report_font;
 
-
 const float REPORT_FPS = 30.0;
+int page;
 
-void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *report_edf, int page) {
+void report_run(struct arg_struct *args) {
+    int num_aliens = args->num_aliens;
+    list_t *aliens = args->aliens;
+    list_t *report_rm = args->report_rm;
+    list_t *report_edf = args->report_rm;
+    page = args->page;
     int row_height = 50;
     int report_height = row_height * (num_aliens + 3) + 40;
     report_display = al_create_display(REPORT_WIDTH, report_height);
@@ -23,6 +28,7 @@ void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *repor
     report_timer = al_create_timer(1.0 / REPORT_FPS);
 
     report_event_queue = al_create_event_queue();
+    al_register_event_source(report_event_queue, al_get_mouse_event_source());
     al_register_event_source(report_event_queue, al_get_keyboard_event_source());
     al_register_event_source(report_event_queue, al_get_display_event_source(report_display));
     al_register_event_source(report_event_queue, al_get_timer_event_source(report_timer));
@@ -46,6 +52,9 @@ void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *repor
                 break;
             case ALLEGRO_EVENT_KEY_DOWN:
                 break;
+            case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+                check_state(report_height, row_height, x_offset, y_offset, event.mouse.x, event.mouse.y);
+                break;
             default:
                 break;
         }
@@ -53,7 +62,7 @@ void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *repor
         draw_report(row_height, report_height, report_rm, units, x_offset, y_offset, 0, page);
         draw_report(row_height, report_height, report_edf, units, x_offset, y_offset, 1, page);
         draw_axis(num_aliens, row_height, report_height, aliens, units, x_offset, y_offset, page);
-
+        draw_buttons(report_height, row_height, x_offset, y_offset);
 
         al_flip_display();
     }
@@ -62,6 +71,7 @@ void report_run(int num_aliens, list_t *aliens, list_t *report_rm, list_t *repor
 
 void draw_axis(int num_aliens, int row_height, int height, list_t *aliens, int units, float x_offset, float y_offset,
                int page) {
+
     float step_width = units * UNIT_SIDE;
     int steps = REPORT_WIDTH / step_width;
     x_offset += (REPORT_WIDTH - step_width * steps) / 2;
@@ -82,12 +92,12 @@ void draw_axis(int num_aliens, int row_height, int height, list_t *aliens, int u
 
 
     if (aliens == NULL) {
-        return NULL;
+        return;
     }
     node_t *head = aliens->element;
     node_t *temp = head;
     if (head == NULL) {
-        return NULL;
+        return;
     }
     alien_t *next = NULL;
     int i = 0;
@@ -102,6 +112,42 @@ void draw_axis(int num_aliens, int row_height, int height, list_t *aliens, int u
 
 }
 
+void draw_buttons(int height, int row_height, float x_offset, float y_offset) {
+    int button_x = REPORT_WIDTH - x_offset - 12;
+    int button_width = 57;
+
+    int button_y1 = height - y_offset - row_height - 5;
+    int button_y2 = height - y_offset - 2 * row_height - 5;
+    int button_height = 30;
+
+    al_draw_rectangle(button_x, button_y1, button_x + button_width, button_y1 + button_height, al_map_rgb(0, 0, 0), 2);
+    al_draw_text(report_font, al_map_rgb(0, 0, 0), REPORT_WIDTH - x_offset - 5, height - y_offset - row_height,
+                 ALLEGRO_ALIGN_LEFT, "PREV");
+
+    al_draw_rectangle(button_x, button_y2, button_x + button_width, button_y2 + button_height, al_map_rgb(0, 0, 0), 2);
+    al_draw_text(report_font, al_map_rgb(0, 0, 0), REPORT_WIDTH - x_offset - 5, height - y_offset - 2 * row_height,
+                 ALLEGRO_ALIGN_LEFT, "NEXT");
+
+//    al_draw_filled_rectangle(x_pos, y_pos, x_pos + width, y_pos + height, al_map_rgb(0, 0, 0));
+}
+
+void check_state(int height, int row_height, float x_offset, float y_offset, int x, int y) {
+
+    int button_x = REPORT_WIDTH - x_offset - 12;
+    int button_w = 57;
+
+    int button_y1 = height - y_offset - row_height - 5;
+    int button_y2 = height - y_offset - 2 * row_height - 5;
+    int button_h = 30;
+
+    if (x > button_x && x < button_x + button_w && y > button_y1 && y < button_y1 + button_h && page > 0) {
+        page -= 1;
+    } else if (x > button_x && x < button_x + button_w && y > button_y2 && y < button_y2 + button_h) {
+        page += 1;
+    }
+}
+
+
 void draw_aliens(int row_height, int height, list_t *aliens, int units, float x_offset, float y_offset, int page) {
 
     float step_width = units * UNIT_SIDE;
@@ -109,12 +155,12 @@ void draw_aliens(int row_height, int height, list_t *aliens, int units, float x_
     x_offset += (REPORT_WIDTH - step_width * steps) / 2;
 
     if (aliens == NULL) {
-        return NULL;
+        return;
     }
     node_t *head = aliens->element;
     node_t *temp = head;
     if (head == NULL) {
-        return NULL;
+        return;
     }
     alien_t *next = NULL;
 
@@ -158,19 +204,20 @@ void draw_aliens(int row_height, int height, list_t *aliens, int units, float x_
 }
 
 void
-draw_report(int row_height, int height, list_t *report, int units, float x_offset, float y_offset, int mode, int page) {
+draw_report(int row_height, int height, list_t *report, int units, float x_offset, float y_offset, int mode,
+            int page) {
     mode += 1;
     float step_width = units * UNIT_SIDE;
     int steps = REPORT_WIDTH / step_width;
     x_offset += (REPORT_WIDTH - step_width * steps) / 2;
 
     if (report == NULL) {
-        return NULL;
+        return;
     }
     node_t *head = report->element;
     node_t *temp = head;
     if (head == NULL) {
-        return NULL;
+        return;
     }
     alien_t *next = NULL;
 
@@ -185,8 +232,7 @@ draw_report(int row_height, int height, list_t *report, int units, float x_offse
         }
         if (temp->alien != NULL) {
             if (temp->alien->id == -1) {
-                al_draw_filled_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE,
-                                         al_map_rgb(255 - temp->alien->r, 255 - temp->alien->g, 255 - temp->alien->b));
+                al_draw_filled_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE, al_map_rgb(0, 0, 0));
                 break;
             }
             if (j >= (steps - 2) * units * (page + 1)) {
@@ -209,4 +255,3 @@ void report_destroy() {
     al_destroy_timer(report_timer);
     al_destroy_font(report_font);
 }
-

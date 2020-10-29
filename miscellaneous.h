@@ -34,5 +34,7 @@ void reset_elements(list_t *list);
 
 void print(list_t *list);
 
+int size(list_t *list);
+
 
 #endif //COLOR_CLASSIFIER_SERVER_MISCELLANEOUS_H

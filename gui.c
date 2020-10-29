@@ -75,9 +75,9 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy) {
                     default:
                         // Alien
                         alien = get_by_id(alien_list, id);
-                        printf("Searching alien id: %d\n", id);
+//                        printf("Searching alien id: %d\n", id);
                         if (alien != NULL) {
-                            printf("Alien id: %d\n", alien->id);
+//                            printf("Alien id: %d\n", alien->id);
                             al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j,
                                                      cell_size * i + offset_x + cell_size, cell_size * j + cell_size,
                                                      al_map_rgb(alien->r, alien->g, alien->b));
