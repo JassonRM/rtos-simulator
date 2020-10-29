@@ -207,13 +207,13 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy,  list_t* re
                                                   cell_size, NULL);
 
                             // Draw energy bar
-                            al_draw_filled_rectangle(0, current_position * cell_size, cell_size,
-                                                     current_position * cell_size + cell_size,
+                            al_draw_filled_rectangle(0, current_position * cell_size + offset_y, cell_size,
+                                                     current_position * cell_size + cell_size + offset_y,
                                                      al_map_rgb(alien->r, alien->g, alien->b));
-                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, 0, current_position * cell_size,
+                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, 0, current_position * cell_size + offset_y,
                                                   cell_size,
                                                   cell_size, NULL);
-                            float energy = alien->exec_time / (float) *max_energy;
+                            float energy = alien->rem_time / (float) *max_energy;
                             int energy_bar = energy * 2 * cell_size;
                             ALLEGRO_COLOR color;
                             if(energy > 0.2){
@@ -221,8 +221,8 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy,  list_t* re
                             }else{
                                 color = al_map_rgb(200, 0, 0);
                             }
-                            al_draw_filled_rectangle(cell_size, current_position * cell_size, cell_size + energy_bar, current_position * cell_size + cell_size, color);
-                            al_draw_rectangle(cell_size, current_position * cell_size, cell_size * 3, current_position * cell_size + cell_size, al_map_rgb(0, 0, 0), 2);
+                            al_draw_filled_rectangle(cell_size, current_position * cell_size + offset_y, cell_size + energy_bar, current_position * cell_size + cell_size + offset_y, color);
+                            al_draw_rectangle(cell_size, current_position * cell_size + offset_y, cell_size * 3, current_position * cell_size + cell_size + offset_y, al_map_rgb(0, 0, 0), 2);
                             current_position++;
                         }
                         break;
@@ -295,7 +295,6 @@ void auto_mode(struct auto_args *args){
 };
 
 void next_clock(int map[MAP_X][MAP_Y], list_t* alien_list, int mode, list_t* report_rm, list_t* report_edf){
-    printf("Next\n");
     alien_t *next_rm, *next_edf;
     next_rm = step(alien_list, 0, cycle);
     append(report_rm, next_rm);
@@ -305,18 +304,17 @@ void next_clock(int map[MAP_X][MAP_Y], list_t* alien_list, int mode, list_t* rep
         if(next_rm != NULL) {
             if(next_rm->id != -1) {
                 move(next_rm, map);
+            }else{
+                running = false;
             }
-        }else{
-            printf("Next RM null\n");
-            running = false;
         }
     }else{
         if(next_edf != NULL) {
             if(next_edf->id != -1) {
                 move(next_edf, map);
+            }else{
+                running = false;
             }
-        }else{
-            running = false;
         }
     }
     cycle++;
