@@ -182,6 +182,9 @@ void draw_aliens(int row_height, int height, list_t *aliens, int units, float x_
             }
             if (k % temp->alien->period == 0) {
                 for (int v = 0; v < temp->alien->exec_time; v += 1) {
+                    if (temp->alien->exit != -1 && j >= temp->alien->exit) {
+                        break;
+                    }
                     if (j >= (steps - 2) * units * page) {
                         al_draw_filled_rectangle(x, y, x + UNIT_SIDE, y + UNIT_SIDE,
                                                  al_map_rgb(temp->alien->r, temp->alien->g, temp->alien->b));

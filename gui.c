@@ -270,6 +270,20 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy, list_t *rep
         }
         al_flip_display();
     }
+
+    if (alien_list != NULL) {
+        node_t *head = alien_list->element;
+        node_t *temp = head;
+        if (head != NULL) {
+            alien_t *next = NULL;
+            while (temp != NULL) {
+                if (temp->alien->exit == -1) {
+                    temp->alien->exit = cycle;
+                }
+                temp = temp->next;
+            }
+        }
+    }
     destroy();
 }
 
