@@ -17,7 +17,7 @@ alien_t *step(list_t *aliens, int mode, int cycle) {
     }
     alien_t *next = NULL;
     while (temp != NULL) {
-        if (cycle < temp->alien->offset || temp->alien->exit != -1) {
+        if (cycle < temp->alien->offset || (temp->alien->exit != -1 && cycle > temp->alien->exit)) {
             temp = temp->next;
             continue;
         } else if ((cycle - temp->alien->offset) % temp->alien->period == 0 && cycle != temp->alien->offset) {

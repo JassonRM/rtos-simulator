@@ -231,10 +231,10 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy, list_t *rep
                         // Alien
                         alien = get_by_id(alien_list, id);
                         if (alien != NULL) {
-                            if(i == 14){
+                            if (i == 14) {
                                 alien->exit = cycle;
                                 map[j][i] = 0;
-                            }else {
+                            } else {
                                 al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j + offset_y,
                                                          cell_size * i + offset_x + cell_size,
                                                          cell_size * j + cell_size + offset_y,
@@ -276,6 +276,18 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy, list_t *rep
         }
         al_flip_display();
     }
+    reset_elements(alien_list);
+    alien_t *next_alien;
+    for (int a = 0; a < cycle; a += 1) {
+        if (mode == 1) {
+            next_alien = step(alien_list, 0, a);
+            append(report_rm, next_alien);
+        } else {
+            next_alien = step(alien_list, 1, a);
+            append(report_edf, next_alien);
+        }
+    }
+
     if (alien_list != NULL) {
         node_t *head = alien_list->element;
         node_t *temp = head;
@@ -289,6 +301,7 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy, list_t *rep
             }
         }
     }
+
     destroy();
 }
 
