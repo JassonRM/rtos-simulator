@@ -77,7 +77,13 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy,  list_t* re
                 mouse_x = event.mouse.x;
                 mouse_y = event.mouse.y;
                 if(mouse_y > 0 && mouse_y < cell_size){
-                    if(mouse_x > 0.5 * cell_size + offset_x && mouse_x < 2.5 * cell_size + offset_x){
+                    if(mouse_x > 0.5 * cell_size && mouse_x < 2.5 * cell_size){
+                        if(mode == 0){
+                            mode = 1;
+                        }else{
+                            mode = 0;
+                        }
+                    }else if(mouse_x > 0.5 * cell_size + offset_x && mouse_x < 2.5 * cell_size + offset_x){
                         // Automatic mode
                         running_auto = true;
                         pthread_t auto_thread;
@@ -135,6 +141,17 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy,  list_t* re
         }
         al_flush_event_queue(event_queue);
         // Draw toolbar
+
+        // Change mode
+        al_draw_filled_rounded_rectangle(0.5 * cell_size, cell_size / 4, 2.5 * cell_size, 3 * cell_size / 4, 10, 10, al_map_rgb(0, 191, 255));
+        if(mode == 0) {
+            al_draw_text(font, al_map_rgb(0, 0, 0), 0.5 * cell_size + cell_size / 4, cell_size / 3, NULL,
+                         "Use EDF");
+        }else{
+            al_draw_text(font, al_map_rgb(0, 0, 0), 0.5 * cell_size + cell_size / 4, cell_size / 3, NULL,
+                         "Use RM");
+        }
+
         // Auto mode
         al_draw_filled_rounded_rectangle(0.5 * cell_size + offset_x, cell_size / 4, 2.5 * cell_size + offset_x, 3 * cell_size / 4, 10, 10, al_map_rgb(0, 191, 255));
         al_draw_text(font, al_map_rgb(0, 0, 0), 0.5 * cell_size + cell_size / 4 + offset_x, cell_size / 3, NULL, "Auto mode");
