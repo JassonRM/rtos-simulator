@@ -17,7 +17,7 @@ void report_run(struct arg_struct *args) {
     int num_aliens = args->num_aliens;
     list_t *aliens = args->aliens;
     list_t *report_rm = args->report_rm;
-    list_t *report_edf = args->report_rm;
+    list_t *report_edf = args->report_edf;
     page = args->page;
     int row_height = 50;
     int report_height = row_height * (num_aliens + 3) + 40;

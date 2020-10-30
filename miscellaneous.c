@@ -91,7 +91,14 @@ void print(list_t *list) {
         return;
     }
     while (temp != NULL) {
-        printf("Alien: %d\n", temp->alien->id);
+        if (temp->alien != NULL){
+            printf("Alien: %d\n", temp->alien->id);
+        }
+        else{
+            printf("None\n");
+        }
+
+
         temp = temp->next;
     }
 }
