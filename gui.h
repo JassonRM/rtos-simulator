@@ -34,6 +34,4 @@ void move(alien_t *, int[MAP_X][MAP_Y]);
 
 void destroy();
 
-void auto_mode(struct auto_args *args);
-
 void next_clock(int map[MAP_X][MAP_Y], list_t *alien_list, int mode, list_t *report_rm, list_t *report_edf);

@@ -122,7 +122,6 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy, list_t *rep
                     } else if (mouse_x > 12.8 * cell_size + offset_x && mouse_x < 15 * cell_size + offset_x) {
                         if (!running_auto) {
                             // Add martian
-                            printf("New alien\n");
                             alien_t *alien;
                             init_alien(&alien, aliens, cycle, period, exec_time, max_energy);
                             append(alien_list, alien);
@@ -232,55 +231,61 @@ void run(int map[MAP_Y][MAP_X], list_t *alien_list, int *max_energy, list_t *rep
                         // Alien
                         alien = get_by_id(alien_list, id);
                         if (alien != NULL) {
-                            al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j + offset_y,
-                                                     cell_size * i + offset_x + cell_size,
-                                                     cell_size * j + cell_size + offset_y,
-                                                     al_map_rgb(alien->r, alien->g, alien->b));
-                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, cell_size * i + offset_x,
-                                                  cell_size * j + offset_y,
-                                                  cell_size,
-                                                  cell_size, NULL);
+                            if(i == 14){
+                                alien->exit = cycle;
+                                map[j][i] = 0;
+                            }else {
+                                al_draw_filled_rectangle(cell_size * i + offset_x, cell_size * j + offset_y,
+                                                         cell_size * i + offset_x + cell_size,
+                                                         cell_size * j + cell_size + offset_y,
+                                                         al_map_rgb(alien->r, alien->g, alien->b));
+                                al_draw_scaled_bitmap(martian, 0, 0, 428, 428, cell_size * i + offset_x,
+                                                      cell_size * j + offset_y,
+                                                      cell_size,
+                                                      cell_size, NULL);
 
-                            // Draw energy bar
-                            al_draw_filled_rectangle(0, current_position * cell_size + offset_y, cell_size,
-                                                     current_position * cell_size + cell_size + offset_y,
-                                                     al_map_rgb(alien->r, alien->g, alien->b));
-                            al_draw_scaled_bitmap(martian, 0, 0, 428, 428, 0, current_position * cell_size + offset_y,
-                                                  cell_size,
-                                                  cell_size, NULL);
-                            float energy = alien->rem_time / (float) *max_energy;
-                            int energy_bar = energy * 2 * cell_size;
-                            ALLEGRO_COLOR color;
-                            if (energy > 0.2) {
-                                color = al_map_rgb(0, 200, 0);
-                            } else {
-                                color = al_map_rgb(200, 0, 0);
+                                // Draw energy bar
+                                al_draw_filled_rectangle(0, current_position * cell_size + offset_y, cell_size,
+                                                         current_position * cell_size + cell_size + offset_y,
+                                                         al_map_rgb(alien->r, alien->g, alien->b));
+                                al_draw_scaled_bitmap(martian, 0, 0, 428, 428, 0,
+                                                      current_position * cell_size + offset_y,
+                                                      cell_size,
+                                                      cell_size, NULL);
+                                float energy = alien->rem_time / (float) *max_energy;
+                                int energy_bar = energy * 2 * cell_size;
+                                ALLEGRO_COLOR color;
+                                if (energy > 0.2) {
+                                    color = al_map_rgb(0, 200, 0);
+                                } else {
+                                    color = al_map_rgb(200, 0, 0);
+                                }
+                                al_draw_filled_rectangle(cell_size, current_position * cell_size + offset_y,
+                                                         cell_size + energy_bar,
+                                                         current_position * cell_size + cell_size + offset_y, color);
+                                al_draw_rectangle(cell_size, current_position * cell_size + offset_y, cell_size * 3,
+                                                  current_position * cell_size + cell_size + offset_y,
+                                                  al_map_rgb(0, 0, 0),
+                                                  2);
+                                current_position++;
                             }
-                            al_draw_filled_rectangle(cell_size, current_position * cell_size + offset_y,
-                                                     cell_size + energy_bar,
-                                                     current_position * cell_size + cell_size + offset_y, color);
-                            al_draw_rectangle(cell_size, current_position * cell_size + offset_y, cell_size * 3,
-                                              current_position * cell_size + cell_size + offset_y, al_map_rgb(0, 0, 0),
-                                              2);
-                            current_position++;
                         }
                         break;
                 }
             }
         }
         al_flip_display();
-    }
-
-    if (alien_list != NULL) {
-        node_t *head = alien_list->element;
-        node_t *temp = head;
-        if (head != NULL) {
-            alien_t *next = NULL;
-            while (temp != NULL) {
-                if (temp->alien->exit == -1) {
-                    temp->alien->exit = cycle;
+        if (alien_list != NULL) {
+            node_t *head = alien_list->element;
+            node_t *temp = head;
+            if (head != NULL) {
+                alien_t *next = NULL;
+                while (temp != NULL) {
+                    if (temp->alien->exit == -1) {
+                        temp->alien->exit = cycle;
+                    }
+                    temp = temp->next;
                 }
-                temp = temp->next;
             }
         }
     }

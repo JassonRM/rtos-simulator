@@ -255,6 +255,7 @@ draw_report(int row_height, int height, list_t *report, int units, float x_offse
 
 void report_destroy() {
     al_destroy_display(report_display);
+    al_destroy_event_queue(report_event_queue);
     al_destroy_timer(report_timer);
     al_destroy_font(report_font);
 }
