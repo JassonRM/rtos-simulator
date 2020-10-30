@@ -58,6 +58,7 @@ void report_run(struct arg_struct *args) {
             default:
                 break;
         }
+        al_flush_event_queue(report_event_queue);
         draw_aliens(row_height, report_height, aliens, units, x_offset, y_offset, page);
         draw_report(row_height, report_height, report_rm, units, x_offset, y_offset, 0, page);
         draw_report(row_height, report_height, report_edf, units, x_offset, y_offset, 1, page);
